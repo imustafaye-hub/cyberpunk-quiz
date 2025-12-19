@@ -1,9 +1,11 @@
 name: Flet APK Build
+
 on: [push, workflow_dispatch]
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
@@ -23,16 +25,27 @@ jobs:
         with:
           channel: 'stable'
 
+      # ✅ ANDROID SDK KURULUYOR
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install flet wikipedia plyer python-dateutil
 
-      - name: Build APK
+      - name: Accept Android licenses
+        run: yes | sdkmanager --licenses
+
+      - name: Install Android build tools
         run: |
-          # Lisansları kabul et ve build bas
-          yes | sdkmanager --licenses || true
-          flet build apk --verbose
+          sdkmanager "platform-tools" "platforms;android-33" "build-tools;33.0.2"
+
+      - name: Flutter Doctor
+        run: flutter doctor -v
+
+      - name: Build APK
+        run: flet build apk --verbose
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
