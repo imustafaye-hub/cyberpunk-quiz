@@ -23,19 +23,20 @@ jobs:
         with:
           channel: 'stable'
 
-      - name: Accept Android Licenses
-        run: yes | sdkmanager --licenses || true
-
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install flet wikipedia plyer python-dateutil
           
       - name: Build APK
-        run: flet build apk --verbose
+        run: |
+          # Android lisanslarını otomatik kabul et
+          yes | sdkmanager --licenses || true
+          # Flet build komutu
+          flet build apk --verbose
         
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: BrainQuiz-App
-          path: build/apk/app-release.apk
+          path: build/apk/*.apk
