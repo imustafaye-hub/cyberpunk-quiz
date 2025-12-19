@@ -25,11 +25,10 @@ jobs:
         with:
           channel: 'stable'
 
-      # ✅ ANDROID SDK KURULUYOR
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Install dependencies
+      - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
           pip install flet wikipedia plyer python-dateutil
@@ -39,15 +38,17 @@ jobs:
 
       - name: Install Android build tools
         run: |
-          sdkmanager "platform-tools" "platforms;android-33" "build-tools;33.0.2"
+          sdkmanager \
+            "platform-tools" \
+            "platforms;android-33" \
+            "build-tools;33.0.2"
 
-      - name: Flutter Doctor
-        run: flutter doctor -v
+      - name: Build APK (ANDROID ONLY)
+        run: |
+          export FLET_PLATFORM=android
+          flet build apk --verbose
 
-      - name: Build APK
-        run: flet build apk --verbose
-
-      - name: Upload Artifact
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: BrainQuiz-App
